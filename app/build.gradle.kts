@@ -52,7 +52,6 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.runtime.android)
-    implementation(libs.androidx.navigation.compose.jvmstubs)
     implementation(libs.androidx.room.common.jvm)
     implementation(libs.engage.core)
     testImplementation(libs.junit)
@@ -75,5 +74,16 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
+    implementation (libs.androidx.runtime.livedata)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.lottie.compose)
+
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore)
+
+    implementation(libs.compose.richtext.ui)
+    implementation(libs.compose.richtext.markdown)
 
 }
