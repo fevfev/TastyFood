@@ -23,4 +23,11 @@ class RecipeViewModel(private val recipeDao: RecipeDao) : ViewModel() {
             emit(recipeDao.getRecipeById(id))
         }
     }
+
+    fun insertRecipe(recipe: RecipeEntity) {
+        viewModelScope.launch {
+            recipeDao.insertRecipe(recipe)
+        }
+    }
 }
+

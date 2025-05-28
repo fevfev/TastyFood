@@ -83,7 +83,11 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.datastore)
 
-    implementation(libs.compose.richtext.ui)
-    implementation(libs.compose.richtext.markdown)
+    //implementation(libs.compose.markdown)
+        //  implementation("dev.jeziellago:compose-markdown:0.3.6")
+    implementation("com.halilibo.compose-richtext:richtext-ui-material3:1.0.0-alpha02")
+    implementation("com.halilibo.compose-richtext:richtext-commonmark:1.0.0-alpha02")
+    implementation("com.halilibo.compose-richtext:richtext-ui:1.0.0-alpha02")
 
+    implementation(libs.androidx.material.navigation)
 }

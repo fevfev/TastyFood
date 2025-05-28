@@ -11,6 +11,13 @@ import com.students.tastyfood.data.local.db.RecipeDatabase
 import com.students.tastyfood.ui.screens.*
 import com.students.tastyfood.viewmodel.RecipeViewModel
 import com.students.tastyfood.viewmodel.RecipeViewModelFactory
+import com.students.tastyfood.viewmodel.SettingsViewModel
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.with
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 
 sealed class Screen(val route: String) {
     object Splash : Screen("splash")
@@ -22,8 +29,9 @@ sealed class Screen(val route: String) {
     object Settings : Screen("settings")
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun NavGraph(navController: NavHostController = rememberNavController()) {
+fun NavGraph(navController: NavHostController = rememberNavController(), settingsViewModel: SettingsViewModel) {
     val context = LocalContext.current
     val recipeDao = RecipeDatabase.getDatabase(context).recipeDao()
     val recipeViewModelFactory = RecipeViewModelFactory(recipeDao)
@@ -33,26 +41,60 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
         startDestination = Screen.Splash.route
     ) {
         composable(Screen.Splash.route) {
-            SplashScreen(navController)
+            AnimatedContent(targetState = navController.currentBackStackEntry?.destination?.route) { _ ->
+                SplashScreen(navController)
+            }
         }
         composable(Screen.Home.route) {
-            HomeScreen(navController, recipeViewModel)
+            AnimatedContent(targetState = navController.currentBackStackEntry?.destination?.route,
+                transitionSpec = {
+                    slideInHorizontally { fullWidth -> fullWidth }.togetherWith(slideOutHorizontally { fullWidth -> -fullWidth })
+                }
+            ) { _ ->
+                HomeScreen(navController, recipeViewModel)
+            }
         }
         composable("recipeDetail/{recipeId}") { backStackEntry ->
             val recipeId = backStackEntry.arguments?.getString("recipeId")?.toIntOrNull() ?: 0
-            RecipeDetailScreen(navController, recipeId, recipeViewModel)
+            AnimatedContent(targetState = navController.currentBackStackEntry?.destination?.route,
+                transitionSpec = {
+                    slideInHorizontally { fullWidth -> fullWidth }.togetherWith(slideOutHorizontally { fullWidth -> -fullWidth })
+                }
+            ) { _ ->
+                RecipeDetailScreen(navController, recipeId, recipeViewModel)
+            }
         }
         composable(Screen.Favorites.route) {
-            FavoritesScreen(navController, recipeViewModel)
+            AnimatedContent(targetState = navController.currentBackStackEntry?.destination?.route,
+                transitionSpec = {
+                    slideInHorizontally { fullWidth -> fullWidth }.togetherWith(slideOutHorizontally { fullWidth -> -fullWidth })
+                }
+            ) { _ ->
+                FavoritesScreen(navController, recipeViewModel)
+            }
         }
         composable(Screen.MyRecipes.route) {
-            MyRecipesScreen(navController, recipeViewModel)
+            AnimatedContent(targetState = navController.currentBackStackEntry?.destination?.route,
+                transitionSpec = {
+                    slideInHorizontally { fullWidth -> fullWidth }.togetherWith(slideOutHorizontally { fullWidth -> -fullWidth })
+                }
+            ) { _ ->
+                MyRecipesScreen(navController, recipeViewModel)
+            }
         }
         composable(Screen.AddRecipe.route) {
-            AddRecipeScreen(navController, recipeViewModel)
+            AnimatedContent(targetState = navController.currentBackStackEntry?.destination?.route,
+                transitionSpec = {
+                    slideInHorizontally { fullWidth -> fullWidth }.togetherWith(slideOutHorizontally { fullWidth -> -fullWidth })
+                }
+            ) { _ ->
+                AddRecipeScreen(navController, recipeViewModel)
+            }
         }
         composable(Screen.Settings.route) {
-            SettingsScreen(navController)
+            AnimatedContent(targetState = navController.currentBackStackEntry?.destination?.route) { _ ->
+                SettingsScreen(navController, settingsViewModel = settingsViewModel)
+            }
         }
     }
 }

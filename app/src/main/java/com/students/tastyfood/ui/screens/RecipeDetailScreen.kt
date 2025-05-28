@@ -23,6 +23,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -33,9 +34,10 @@ import coil3.compose.rememberAsyncImagePainter
 import com.students.tastyfood.data.local.entity.Ingredient
 import com.students.tastyfood.data.local.entity.RecipeEntity
 import com.students.tastyfood.viewmodel.RecipeViewModel
-import io.github.halilozercan.compose.richtext.markdown.Markdown
-import io.github.halilozercan.compose.richtext.RichText
 import kotlinx.coroutines.flow.collectLatest
+import com.halilibo.richtext.commonmark.Markdown
+import com.halilibo.richtext.ui.material3.RichText
+
 
 @Composable
 fun RecipeDetailScreen(navController: NavController, recipeId: Int, viewModel: RecipeViewModel) {
@@ -98,13 +100,14 @@ fun RecipeDetailScreen(navController: NavController, recipeId: Int, viewModel: R
 
             // Визуализация сложности
             LinearProgressIndicator(
-                progress = it.difficulty / 5f,
-                color = Color(0xFFF96163),
-                trackColor = Color.LightGray,
-                modifier = Modifier
-                    .fillMaxWidth(0.7f)
-                    .height(6.dp)
-                    .padding(start = 16.dp, top = 4.dp, bottom = 2.dp)
+            progress = { it.difficulty / 5f },
+            modifier = Modifier
+                                .fillMaxWidth(0.7f)
+                                .height(6.dp)
+                                .padding(start = 16.dp, top = 4.dp, bottom = 2.dp),
+            color = Color(0xFFF96163),
+            trackColor = Color.LightGray,
+            strokeCap = StrokeCap.Round,
             )
             Text("Сложность: ${it.difficulty}/5", fontSize = 13.sp, color = Color.Gray, modifier = Modifier.padding(start = 16.dp, bottom = 8.dp))
 
@@ -120,7 +123,10 @@ fun RecipeDetailScreen(navController: NavController, recipeId: Int, viewModel: R
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
             )
 
-            RichText(modifier = Modifier.padding(16.dp)) {
+            Text(text = "Описание:")
+            RichText(
+                modifier = Modifier.padding(16.dp)
+            ) {
                 Markdown(it.description)
             }
 

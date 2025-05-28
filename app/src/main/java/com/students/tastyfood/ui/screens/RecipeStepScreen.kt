@@ -33,10 +33,11 @@ import androidx.core.net.toUri
 import androidx.navigation.NavController
 import coil3.compose.rememberAsyncImagePainter
 import com.students.tastyfood.viewmodel.RecipeViewModel
-import io.github.halilozercan.compose.richtext.markdown.Markdown
-import io.github.halilozercan.compose.richtext.RichText
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collectLatest
+import com.halilibo.richtext.commonmark.Markdown
+import com.halilibo.richtext.ui.material3.RichText
 
 @Composable
 fun RecipeStepScreen(recipeId: Int, navController: NavController, viewModel: RecipeViewModel) {
@@ -84,7 +85,9 @@ fun RecipeStepScreen(recipeId: Int, navController: NavController, viewModel: Rec
             Text(text = it.title, style = MaterialTheme.typography.headlineSmall)
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = "Описание:")
-            RichText(modifier = Modifier.padding(bottom = 8.dp)) {
+            RichText(
+                modifier = Modifier.padding(8.dp)
+            ) {
                 Markdown(it.description)
             }
             Spacer(modifier = Modifier.height(16.dp))

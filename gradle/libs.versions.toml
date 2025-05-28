@@ -1,8 +1,9 @@
 [versions]
+accompanistNavigationAnimation = "0.36.0"
 agp = "8.10.0"
 coilAndroid = "3.2.0"
 coilCompose = "3.2.0"
-composeRichtextUi = "0.17.0"
+composeMarkdown = "0.5.7"
 datastorePreferences = "1.1.7"
 kotlin = "2.1.21"
 coreKtx = "1.16.0"
@@ -14,10 +15,12 @@ lifecycleRuntimeKtx = "2.9.0"
 activityCompose = "1.10.1"
 composeBom = "2025.05.01"
 lottieCompose = "6.5.1"
+materialNavigation = "1.8.2"
 navigationCompose = "2.9.0"
 navigationFragmentKtx = "2.9.0"
 navigationRuntimeAndroid = "2.9.0"
 navigationUiKtx = "2.9.0"
+richtextUi = "0.14.0"
 roomCommonJvm = "2.7.1"
 engageCore = "1.5.8"
 roomCompiler = "2.7.1"
@@ -29,6 +32,7 @@ runtimeLivedata = "1.8.2"
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastorePreferences" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
+androidx-material-navigation = { module = "androidx.compose.material:material-navigation", version.ref = "materialNavigation" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
 androidx-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigationUiKtx" }
@@ -37,8 +41,8 @@ androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomKtx"
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 coil-android = { module = "io.coil-kt.coil3:coil-android", version.ref = "coilAndroid" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
-compose-richtext-markdown = { module = "io.github.halilozercan:compose-richtext-markdown", version.ref = "composeRichtextUi" }
-compose-richtext-ui = { module = "io.github.halilozercan:compose-richtext-ui", version.ref = "composeRichtextUi" }
+compose-markdown = { module = "com.github.jeziellago:compose-markdown", version.ref = "composeMarkdown" }
+compose-richtext-ui = { module = "io.github.halilozercan:compose-richtext-ui", version.ref = "richtextUi" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

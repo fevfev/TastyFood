@@ -12,7 +12,7 @@ private val Context.dataStore by preferencesDataStore(name = "categories")
 
 object CategoriesDataStore {
     private val CATEGORIES_KEY = stringSetPreferencesKey("categories")
-    val defaultCategories = setOf("Все", "Breakfast", "Asian food", "Lunch", "Dinner")
+    val defaultCategories = setOf("R.string.all_recipes", "R.string.breakfast", "R.string.asian", "R.string.lunch", "R.string.dinner", "R.string.salads", "R.string.soups", "R.string.desserts", "R.string.drinks")
 
     fun getCategories(context: Context): Flow<Set<String>> =
         context.dataStore.data.map { prefs ->

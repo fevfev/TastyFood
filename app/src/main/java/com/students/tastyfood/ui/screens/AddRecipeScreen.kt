@@ -37,9 +37,29 @@ import com.students.tastyfood.viewmodel.RecipeViewModel
 import com.students.tastyfood.data.local.CategoriesDataStore
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.InputStream
+import java.io.OutputStream
+import android.content.Context
 
+fun saveImageToInternalStorage(context: Context, uri: Uri): String? {
+    return try {
+        val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+        val fileName = "recipe_${System.currentTimeMillis()}.jpg"
+        val file = File(context.filesDir, fileName)
+        val outputStream: OutputStream = file.outputStream()
+        inputStream?.copyTo(outputStream)
+        inputStream?.close()
+        outputStream.close()
+        file.absolutePath
+    } catch (e: Exception) {
+        null
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddRecipeScreen(navController: NavController, viewModel: RecipeViewModel) {
+fun AddRecipeScreen(navController: NavController, viewModel: RecipeViewModel, onMenuClick: (() -> Unit)? = null) {
     var title by remember { mutableStateOf("") }
     var cookTime by remember { mutableStateOf("") }
     var difficulty by remember { mutableStateOf("") }
@@ -61,17 +81,24 @@ fun AddRecipeScreen(navController: NavController, viewModel: RecipeViewModel) {
         Ingredient(3, "Сыр", imageRes = R.drawable.cheese),
     )
 
+    val context = LocalContext.current
+
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        imageUri = uri?.toString()
+        uri?.let { selectedUri ->
+            val savedPath = saveImageToInternalStorage(context, selectedUri)
+            imageUri = savedPath
+        }
     }
 
     val mediaLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let { newUri ->
-            descriptionMedia = descriptionMedia + newUri.toString()
+            val savedPath = saveImageToInternalStorage(context, newUri)
+            savedPath?.let {
+                descriptionMedia = descriptionMedia + it
+            }
         }
     }
 
-    val context = LocalContext.current
     var selectedCategory by remember { mutableStateOf("Все") }
     var newCategory by remember { mutableStateOf("") }
     val categoriesState = remember { mutableStateOf(setOf<String>()) }
@@ -82,247 +109,255 @@ fun AddRecipeScreen(navController: NavController, viewModel: RecipeViewModel) {
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = androidx.compose.ui.graphics.Brush.verticalGradient(
-                    colors = listOf(pastelBg, white)
-                )
-            )
-    ) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            item {
-                Box(modifier = Modifier.height(250.dp)) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(250.dp)
-                            .clickable { launcher.launch("image/*") },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (imageUri != null) {
-                            Image(
-                                painter = rememberAsyncImagePainter(
-                                    ImageRequest.Builder(LocalContext.current)
-                                        .data(imageUri)
-                                        .build()
-                                ),
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.fillMaxSize()
-                            )
-                        } else {
-                            Image(
-                                painter = rememberAsyncImagePainter("https://i.pinimg.com/736x/fb/90/84/fb9084df5b28f78ba9ba7f27de810c70.jpg?text=Recipe+Image"),
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.fillMaxSize()
-                            )
-                        }
-                    }
-                    Icon(
-                        Icons.Default.Favorite,
-                        contentDescription = null,
-                        tint = pastelPink,
-                        modifier = Modifier
-                            .align(Alignment.TopStart)
-                            .padding(16.dp)
-                            .background(white, shape = CircleShape)
-                            .padding(8.dp)
+    Scaffold(
+        topBar = {
+            TastyTopBar(title = "Добавить рецепт", onMenuClick = onMenuClick, onBackClick = if (onMenuClick == null) { { navController.popBackStack() } } else null)
+        },
+        containerColor = pastelBg
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = androidx.compose.ui.graphics.Brush.verticalGradient(
+                        colors = listOf(pastelBg, white)
                     )
-                }
-            }
-
-            item {
-                Card(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .offset(y = (-24).dp)
-                        .clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
-                        .background(white),
-                    colors = CardDefaults.cardColors(containerColor = white)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Text(
-                            text = if (title.isBlank()) "Изменить рецепт" else title,
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = textColor
-                        )
-
-                        OutlinedTextField(
-                            value = title,
-                            onValueChange = { title = it },
-                            label = { Text("Название блюда") },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        OutlinedTextField(
-                            value = cookTime,
-                            onValueChange = { cookTime = it },
-                            label = { Text("Время готовки") },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        OutlinedTextField(
-                            value = difficulty,
-                            onValueChange = { difficulty = it },
-                            label = { Text("Сложность") },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        OutlinedTextField(
-                            value = description,
-                            onValueChange = { description = it },
-                            label = { Text("Описание блюда") },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        Text("Описание и медиа:", fontWeight = FontWeight.SemiBold)
-
-                        LazyRow(modifier = Modifier.fillMaxWidth()) {
-                            items(descriptionMedia) { mediaUrl ->
+                )
+                .padding(paddingValues)
+        ) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                item {
+                    Box(modifier = Modifier.height(250.dp)) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(250.dp)
+                                .clickable { launcher.launch("image/*") },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (imageUri != null) {
                                 Image(
-                                    painter = rememberAsyncImagePainter(mediaUrl),
+                                    painter = rememberAsyncImagePainter(
+                                        ImageRequest.Builder(LocalContext.current)
+                                            .data(imageUri)
+                                            .build()
+                                    ),
                                     contentDescription = null,
-                                    modifier = Modifier
-                                        .size(100.dp)
-                                        .padding(4.dp),
-                                    contentScale = ContentScale.Crop
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            } else {
+                                Image(
+                                    painter = rememberAsyncImagePainter("https://i.pinimg.com/736x/fb/90/84/fb9084df5b28f78ba9ba7f27de810c70.jpg?text=Recipe+Image"),
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.fillMaxSize()
                                 )
                             }
                         }
-                        Button(
-                            onClick = { mediaLauncher.launch("image/*") },
-                            colors = ButtonDefaults.buttonColors(containerColor = pastelBg),
-                            modifier = Modifier.fillMaxWidth()
+                        Icon(
+                            Icons.Default.Favorite,
+                            contentDescription = null,
+                            tint = pastelPink,
+                            modifier = Modifier
+                                .align(Alignment.TopStart)
+                                .padding(16.dp)
+                                .background(white, shape = CircleShape)
+                                .padding(8.dp)
+                        )
+                    }
+                }
+
+                item {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .offset(y = (-24).dp)
+                            .clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
+                            .background(white),
+                        colors = CardDefaults.cardColors(containerColor = white)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(20.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            Text("Добавить медиа", color = pastelPink)
-                        }
+                            Text(
+                                text = if (title.isBlank()) "Изменить рецепт" else title,
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = textColor
+                            )
 
-                        Text("Выберите ингредиенты:", fontWeight = FontWeight.SemiBold)
+                            OutlinedTextField(
+                                value = title,
+                                onValueChange = { title = it },
+                                label = { Text("Название блюда") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
 
-                        LazyRow(modifier = Modifier.fillMaxWidth()) {
-                            items(ingredients) { ingredient ->
-                                val selected = ingredient.id in selectedIngredients
-                                Box(
-                                    modifier = Modifier
-                                        .padding(8.dp)
-                                        .size(64.dp)
-                                        .clip(CircleShape)
-                                        .background(if (selected) pastelPink else pastelBg)
-                                        .border(2.dp, if (selected) pastelPink else Color.LightGray, CircleShape)
-                                        .clickable {
-                                            selectedIngredients = if (selected)
-                                                selectedIngredients - ingredient.id
-                                            else
-                                                selectedIngredients + ingredient.id
-                                        },
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    if (ingredient.imageRes != null) {
-                                        Image(
-                                            painter = painterResource(id = ingredient.imageRes),
-                                            contentDescription = null,
-                                            modifier = Modifier.size(48.dp),
-                                            contentScale = ContentScale.Crop
-                                        )
-                                    } else {
-                                        Image(
-                                            painter = rememberAsyncImagePainter(ingredient.imageUrl),
-                                            contentDescription = null,
-                                            modifier = Modifier.size(48.dp),
-                                            contentScale = ContentScale.Crop
-                                        )
-                                    }
-                                }
-                            }
-                        }
+                            OutlinedTextField(
+                                value = cookTime,
+                                onValueChange = { cookTime = it },
+                                label = { Text("Время готовки") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
 
-                        Text("Категория:", fontWeight = FontWeight.SemiBold)
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            var expanded by remember { mutableStateOf(false) }
-                            OutlinedButton(onClick = { expanded = true }) {
-                                Text(selectedCategory)
-                            }
-                            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                                categoriesState.value.forEach { cat ->
-                                    DropdownMenuItem(
-                                        text = { Text(cat) },
-                                        onClick = {
-                                            selectedCategory = cat
-                                            expanded = false
-                                        }
+                            OutlinedTextField(
+                                value = difficulty,
+                                onValueChange = { difficulty = it },
+                                label = { Text("Сложность") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+
+                            OutlinedTextField(
+                                value = description,
+                                onValueChange = { description = it },
+                                label = { Text("Описание блюда") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+
+                            Text("Описание и медиа:", fontWeight = FontWeight.SemiBold)
+
+                            LazyRow(modifier = Modifier.fillMaxWidth()) {
+                                items(descriptionMedia) { mediaUrl ->
+                                    Image(
+                                        painter = rememberAsyncImagePainter(mediaUrl),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .size(100.dp)
+                                            .padding(4.dp),
+                                        contentScale = ContentScale.Crop
                                     )
                                 }
                             }
-                            Spacer(modifier = Modifier.width(8.dp))
-                            OutlinedTextField(
-                                value = newCategory,
-                                onValueChange = { newCategory = it },
-                                label = { Text("Новая категория") },
-                                singleLine = true,
-                                modifier = Modifier.width(140.dp)
-                            )
+                            Button(
+                                onClick = { mediaLauncher.launch("image/*") },
+                                colors = ButtonDefaults.buttonColors(containerColor = pastelBg),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text("Добавить медиа", color = pastelPink)
+                            }
+
+                            Text("Выберите ингредиенты:", fontWeight = FontWeight.SemiBold)
+
+                            LazyRow(modifier = Modifier.fillMaxWidth()) {
+                                items(ingredients) { ingredient ->
+                                    val selected = ingredient.id in selectedIngredients
+                                    Box(
+                                        modifier = Modifier
+                                            .padding(8.dp)
+                                            .size(64.dp)
+                                            .clip(CircleShape)
+                                            .background(if (selected) pastelPink else pastelBg)
+                                            .border(2.dp, if (selected) pastelPink else Color.LightGray, CircleShape)
+                                            .clickable {
+                                                selectedIngredients = if (selected)
+                                                    selectedIngredients - ingredient.id
+                                                else
+                                                    selectedIngredients + ingredient.id
+                                            },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        if (ingredient.imageRes != null) {
+                                            Image(
+                                                painter = painterResource(id = ingredient.imageRes),
+                                                contentDescription = null,
+                                                modifier = Modifier.size(48.dp),
+                                                contentScale = ContentScale.Crop
+                                            )
+                                        } else {
+                                            Image(
+                                                painter = rememberAsyncImagePainter(ingredient.imageUrl),
+                                                contentDescription = null,
+                                                modifier = Modifier.size(48.dp),
+                                                contentScale = ContentScale.Crop
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            Text("Категория:", fontWeight = FontWeight.SemiBold)
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                var expanded by remember { mutableStateOf(false) }
+                                OutlinedButton(onClick = { expanded = true }) {
+                                    Text(selectedCategory)
+                                }
+                                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                                    categoriesState.value.forEach { cat ->
+                                        DropdownMenuItem(
+                                            text = { Text(cat) },
+                                            onClick = {
+                                                selectedCategory = cat
+                                                expanded = false
+                                            }
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.width(8.dp))
+                                OutlinedTextField(
+                                    value = newCategory,
+                                    onValueChange = { newCategory = it },
+                                    label = { Text("Новая категория") },
+                                    singleLine = true,
+                                    modifier = Modifier.width(140.dp)
+                                )
+                                Button(
+                                    onClick = {
+                                        if (newCategory.isNotBlank()) {
+                                            coroutineScope.launch {
+                                                CategoriesDataStore.addCategory(context, newCategory)
+                                                selectedCategory = newCategory
+                                                newCategory = ""
+                                            }
+                                        }
+                                    },
+                                    enabled = newCategory.isNotBlank(),
+                                    modifier = Modifier.padding(start = 4.dp)
+                                ) {
+                                    Text("+")
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
                             Button(
                                 onClick = {
-                                    if (newCategory.isNotBlank()) {
+                                    if (title.isBlank() || cookTime.isBlank() || difficulty.isBlank()) {
+                                        showError = true
+                                    } else {
                                         coroutineScope.launch {
-                                            CategoriesDataStore.addCategory(context, newCategory)
-                                            selectedCategory = newCategory
-                                            newCategory = ""
+                                            val selectedNames = ingredients.filter { it.id in selectedIngredients }.map { it.name }
+                                            val recipe = RecipeEntity(
+                                                title = title,
+                                                imageUrl = imageUri,
+                                                cookingTime = cookTime,
+                                                difficulty = difficulty.toIntOrNull() ?: 1,
+                                                description = description,
+                                                rating = 0f,
+                                                isFavorite = false,
+                                                ingredients = selectedNames,
+                                                descriptionMedia = descriptionMedia,
+                                                category = selectedCategory
+                                            )
+                                            viewModel.insertRecipe(recipe)
+                                            navController.popBackStack()
                                         }
                                     }
                                 },
-                                enabled = newCategory.isNotBlank(),
-                                modifier = Modifier.padding(start = 4.dp)
+                                colors = ButtonDefaults.buttonColors(containerColor = pastelPink),
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(16.dp)
                             ) {
-                                Text("+")
+                                Text("Сохранить рецепт", color = white)
                             }
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Button(
-                            onClick = {
-                                if (title.isBlank() || cookTime.isBlank() || difficulty.isBlank()) {
-                                    showError = true
-                                } else {
-                                    coroutineScope.launch {
-                                        val selectedNames = ingredients.filter { it.id in selectedIngredients }.map { it.name }
-                                        val recipe = RecipeEntity(
-                                            title = title,
-                                            imageUrl = imageUri,
-                                            cookingTime = cookTime,
-                                            difficulty = difficulty.toIntOrNull() ?: 1,
-                                            description = description,
-                                            rating = 0f,
-                                            isFavorite = false,
-                                            ingredients = selectedNames,
-                                            descriptionMedia = descriptionMedia,
-                                            category = selectedCategory
-                                        )
-                                        viewModel.insertRecipe(recipe)
-                                        navController.popBackStack()
-                                    }
-                                }
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = pastelPink),
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(16.dp)
-                        ) {
-                            Text("Сохранить рецепт", color = white)
-                        }
-                        if (showError) {
-                            Text("Пожалуйста, заполните все поля", color = Color.Red)
+                            if (showError) {
+                                Text("Пожалуйста, заполните все поля", color = Color.Red)
+                            }
                         }
                     }
                 }
