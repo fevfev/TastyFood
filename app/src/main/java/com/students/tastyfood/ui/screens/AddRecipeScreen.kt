@@ -77,6 +77,7 @@ fun AddRecipeScreen(navController: NavController, viewModel: RecipeViewModel, on
     var newStepDescription by remember { mutableStateOf("") }
     var newStepDuration by remember { mutableStateOf("") }
     var newStepImageUri by remember { mutableStateOf<String?>(null) }
+    var newStepVideoUrl by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
 
     val ingredients = listOf(
@@ -382,6 +383,12 @@ fun AddRecipeScreen(navController: NavController, viewModel: RecipeViewModel, on
                                         Text("Фото", color = PastelPink)
                                     }
                                 }
+                                OutlinedTextField(
+                                    value = newStepVideoUrl,
+                                    onValueChange = { newStepVideoUrl = it },
+                                    label = { Text("Ссылка на видео или YouTube (необязательно)") },
+                                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                                )
                                 if (newStepImageUri != null) {
                                     Image(
                                         painter = rememberAsyncImagePainter(newStepImageUri),
@@ -397,12 +404,13 @@ fun AddRecipeScreen(navController: NavController, viewModel: RecipeViewModel, on
                                                 RecipeStep(
                                                     description = newStepDescription,
                                                     durationMinutes = newStepDuration.toIntOrNull() ?: 5,
-                                                    imageUrl = newStepImageUri
+                                                    imageUrl = if (newStepVideoUrl.isNotBlank()) newStepVideoUrl else newStepImageUri
                                                 )
                                             )
                                             newStepDescription = ""
                                             newStepDuration = ""
                                             newStepImageUri = null
+                                            newStepVideoUrl = ""
                                         }
                                     },
                                     enabled = newStepDescription.isNotBlank() && newStepDuration.isNotBlank(),
