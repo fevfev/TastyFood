@@ -41,6 +41,11 @@ import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
 import android.content.Context
+import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.res.stringResource
+import com.students.tastyfood.model.RecipeStep
+import com.students.tastyfood.util.RecipeStepSerializer
+import com.students.tastyfood.ui.theme.*
 
 fun saveImageToInternalStorage(context: Context, uri: Uri): String? {
     return try {
@@ -52,7 +57,7 @@ fun saveImageToInternalStorage(context: Context, uri: Uri): String? {
         inputStream?.close()
         outputStream.close()
         file.absolutePath
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         null
     }
 }
@@ -68,12 +73,11 @@ fun AddRecipeScreen(navController: NavController, viewModel: RecipeViewModel, on
     var descriptionMedia by remember { mutableStateOf(listOf<String>()) }
     var description by remember { mutableStateOf("") }
     var showError by remember { mutableStateOf(false) }
+    var steps by remember { mutableStateOf(mutableListOf<RecipeStep>()) }
+    var newStepDescription by remember { mutableStateOf("") }
+    var newStepDuration by remember { mutableStateOf("") }
+    var newStepImageUri by remember { mutableStateOf<String?>(null) }
     val coroutineScope = rememberCoroutineScope()
-
-    val pastelPink = Color(0xFFF96163)
-    val pastelBg = Color(0xFFF6F4FA)
-    val white = Color.White
-    val textColor = Color(0xFF3C444C)
 
     val ingredients = listOf(
         Ingredient(1, "Мясо", imageRes = R.drawable.meat),
@@ -99,6 +103,13 @@ fun AddRecipeScreen(navController: NavController, viewModel: RecipeViewModel, on
         }
     }
 
+    val stepImageLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let { selectedUri ->
+            val savedPath = saveImageToInternalStorage(context, selectedUri)
+            newStepImageUri = savedPath
+        }
+    }
+
     var selectedCategory by remember { mutableStateOf("Все") }
     var newCategory by remember { mutableStateOf("") }
     val categoriesState = remember { mutableStateOf(setOf<String>()) }
@@ -113,14 +124,14 @@ fun AddRecipeScreen(navController: NavController, viewModel: RecipeViewModel, on
         topBar = {
             TastyTopBar(title = "Добавить рецепт", onMenuClick = onMenuClick, onBackClick = if (onMenuClick == null) { { navController.popBackStack() } } else null)
         },
-        containerColor = pastelBg
+        containerColor = PastelBg
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
                     brush = androidx.compose.ui.graphics.Brush.verticalGradient(
-                        colors = listOf(pastelBg, white)
+                        colors = listOf(PastelBg, White)
                     )
                 )
                 .padding(paddingValues)
@@ -161,11 +172,11 @@ fun AddRecipeScreen(navController: NavController, viewModel: RecipeViewModel, on
                         Icon(
                             Icons.Default.Favorite,
                             contentDescription = null,
-                            tint = pastelPink,
+                            tint = PastelPink,
                             modifier = Modifier
                                 .align(Alignment.TopStart)
                                 .padding(16.dp)
-                                .background(white, shape = CircleShape)
+                                .background(White, shape = CircleShape)
                                 .padding(8.dp)
                         )
                     }
@@ -177,8 +188,8 @@ fun AddRecipeScreen(navController: NavController, viewModel: RecipeViewModel, on
                             .fillMaxSize()
                             .offset(y = (-24).dp)
                             .clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
-                            .background(white),
-                        colors = CardDefaults.cardColors(containerColor = white)
+                            .background(White),
+                        colors = CardDefaults.cardColors(containerColor = White)
                     ) {
                         Column(
                             modifier = Modifier
@@ -190,7 +201,7 @@ fun AddRecipeScreen(navController: NavController, viewModel: RecipeViewModel, on
                                 text = if (title.isBlank()) "Изменить рецепт" else title,
                                 fontSize = 22.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = textColor
+                                color = TextColor
                             )
 
                             OutlinedTextField(
@@ -221,7 +232,7 @@ fun AddRecipeScreen(navController: NavController, viewModel: RecipeViewModel, on
                                 modifier = Modifier.fillMaxWidth()
                             )
 
-                            Text("Описание и медиа:", fontWeight = FontWeight.SemiBold)
+                            Text(stringResource(R.string.description_media), fontWeight = FontWeight.SemiBold)
 
                             LazyRow(modifier = Modifier.fillMaxWidth()) {
                                 items(descriptionMedia) { mediaUrl ->
@@ -237,13 +248,13 @@ fun AddRecipeScreen(navController: NavController, viewModel: RecipeViewModel, on
                             }
                             Button(
                                 onClick = { mediaLauncher.launch("image/*") },
-                                colors = ButtonDefaults.buttonColors(containerColor = pastelBg),
+                                colors = ButtonDefaults.buttonColors(containerColor = PastelBg),
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text("Добавить медиа", color = pastelPink)
+                                Text("Добавить файл", color = PastelPink)
                             }
 
-                            Text("Выберите ингредиенты:", fontWeight = FontWeight.SemiBold)
+                            Text("Выберите ингредиенты", fontWeight = FontWeight.SemiBold)
 
                             LazyRow(modifier = Modifier.fillMaxWidth()) {
                                 items(ingredients) { ingredient ->
@@ -253,8 +264,8 @@ fun AddRecipeScreen(navController: NavController, viewModel: RecipeViewModel, on
                                             .padding(8.dp)
                                             .size(64.dp)
                                             .clip(CircleShape)
-                                            .background(if (selected) pastelPink else pastelBg)
-                                            .border(2.dp, if (selected) pastelPink else Color.LightGray, CircleShape)
+                                            .background(if (selected) PastelPink else PastelBg)
+                                            .border(2.dp, if (selected) PastelPink else Color.LightGray, CircleShape)
                                             .clickable {
                                                 selectedIngredients = if (selected)
                                                     selectedIngredients - ingredient.id
@@ -282,7 +293,7 @@ fun AddRecipeScreen(navController: NavController, viewModel: RecipeViewModel, on
                                 }
                             }
 
-                            Text("Категория:", fontWeight = FontWeight.SemiBold)
+                            Text("Категории", fontWeight = FontWeight.SemiBold)
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 var expanded by remember { mutableStateOf(false) }
                                 OutlinedButton(onClick = { expanded = true }) {
@@ -303,7 +314,7 @@ fun AddRecipeScreen(navController: NavController, viewModel: RecipeViewModel, on
                                 OutlinedTextField(
                                     value = newCategory,
                                     onValueChange = { newCategory = it },
-                                    label = { Text("Новая категория") },
+                                    label = { Text(stringResource(R.string.new_category)) },
                                     singleLine = true,
                                     modifier = Modifier.width(140.dp)
                                 )
@@ -324,6 +335,83 @@ fun AddRecipeScreen(navController: NavController, viewModel: RecipeViewModel, on
                                 }
                             }
 
+                            Text("Шаги приготовления", fontWeight = FontWeight.SemiBold)
+                            Column {
+                                steps.forEachIndexed { idx, step ->
+                                    Card(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 4.dp),
+                                        colors = CardDefaults.cardColors(containerColor = PastelBg)
+                                    ) {
+                                        Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                                            if (!step.imageUrl.isNullOrBlank()) {
+                                                Image(
+                                                    painter = rememberAsyncImagePainter(step.imageUrl),
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(56.dp).clip(RoundedCornerShape(8.dp)),
+                                                    contentScale = ContentScale.Crop
+                                                )
+                                            }
+                                            Column(modifier = Modifier.weight(1f).padding(start = 8.dp)) {
+                                                Text(step.description, fontWeight = FontWeight.Medium)
+                                                Text("Время: ${step.durationMinutes} мин", fontSize = 12.sp, color = Color.Gray)
+                                            }
+                                            IconButton(onClick = { steps.removeAt(idx) }) {
+                                                Icon(Icons.Default.Favorite, contentDescription = "Удалить", tint = PastelPink)
+                                            }
+                                        }
+                                    }
+                                }
+                                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 8.dp)) {
+                                    OutlinedTextField(
+                                        value = newStepDescription,
+                                        onValueChange = { newStepDescription = it },
+                                        label = { Text("Описание шага") },
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    Spacer(Modifier.width(8.dp))
+                                    OutlinedTextField(
+                                        value = newStepDuration,
+                                        onValueChange = { newStepDuration = it.filter { ch -> ch.isDigit() } },
+                                        label = { Text("Мин.") },
+                                        modifier = Modifier.width(70.dp)
+                                    )
+                                    Spacer(Modifier.width(8.dp))
+                                    Button(onClick = { stepImageLauncher.launch("image/*") }, colors = ButtonDefaults.buttonColors(containerColor = PastelBg)) {
+                                        Text("Фото", color = PastelPink)
+                                    }
+                                }
+                                if (newStepImageUri != null) {
+                                    Image(
+                                        painter = rememberAsyncImagePainter(newStepImageUri),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(56.dp).clip(RoundedCornerShape(8.dp)),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                }
+                                Button(
+                                    onClick = {
+                                        if (newStepDescription.isNotBlank() && newStepDuration.isNotBlank()) {
+                                            steps.add(
+                                                RecipeStep(
+                                                    description = newStepDescription,
+                                                    durationMinutes = newStepDuration.toIntOrNull() ?: 5,
+                                                    imageUrl = newStepImageUri
+                                                )
+                                            )
+                                            newStepDescription = ""
+                                            newStepDuration = ""
+                                            newStepImageUri = null
+                                        }
+                                    },
+                                    enabled = newStepDescription.isNotBlank() && newStepDuration.isNotBlank(),
+                                    modifier = Modifier.padding(top = 8.dp)
+                                ) {
+                                    Text("Добавить шаг")
+                                }
+                            }
+
                             Spacer(modifier = Modifier.height(16.dp))
                             Button(
                                 onClick = {
@@ -341,22 +429,23 @@ fun AddRecipeScreen(navController: NavController, viewModel: RecipeViewModel, on
                                                 rating = 0f,
                                                 isFavorite = false,
                                                 ingredients = selectedNames,
-                                                descriptionMedia = descriptionMedia,
-                                                category = selectedCategory
+                                                descriptionMedia = steps.map { RecipeStepSerializer.toJson(listOf(it)) },
+                                                category = selectedCategory,
+                                                steps = steps
                                             )
                                             viewModel.insertRecipe(recipe)
                                             navController.popBackStack()
                                         }
                                     }
                                 },
-                                colors = ButtonDefaults.buttonColors(containerColor = pastelPink),
+                                colors = ButtonDefaults.buttonColors(containerColor = PastelPink),
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(16.dp)
                             ) {
-                                Text("Сохранить рецепт", color = white)
+                                Text(stringResource(R.string.save), color = White)
                             }
                             if (showError) {
-                                Text("Пожалуйста, заполните все поля", color = Color.Red)
+                                Text("Заполните все поля", color = Color.Red)
                             }
                         }
                     }

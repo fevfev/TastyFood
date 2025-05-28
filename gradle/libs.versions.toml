@@ -4,6 +4,7 @@ agp = "8.10.0"
 coilAndroid = "3.2.0"
 coilCompose = "3.2.0"
 composeMarkdown = "0.5.7"
+converterGson = "2.9.0"
 datastorePreferences = "1.1.7"
 kotlin = "2.1.21"
 coreKtx = "1.16.0"
@@ -20,7 +21,11 @@ navigationCompose = "2.9.0"
 navigationFragmentKtx = "2.9.0"
 navigationRuntimeAndroid = "2.9.0"
 navigationUiKtx = "2.9.0"
+retrofit = "2.9.0"
+richtextCommonmark = "1.0.0-alpha02"
 richtextUi = "0.14.0"
+richtextUiMaterial3 = "1.0.0-alpha02"
+richtextUiVersion = "1.0.0-alpha02"
 roomCommonJvm = "2.7.1"
 engageCore = "1.5.8"
 roomCompiler = "2.7.1"
@@ -43,6 +48,7 @@ coil-android = { module = "io.coil-kt.coil3:coil-android", version.ref = "coilAn
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 compose-markdown = { module = "com.github.jeziellago:compose-markdown", version.ref = "composeMarkdown" }
 compose-richtext-ui = { module = "io.github.halilozercan:compose-richtext-ui", version.ref = "richtextUi" }
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -63,6 +69,10 @@ engage-core = { group = "com.google.android.engage", name = "engage-core", versi
 androidx-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata", version.ref = "runtimeLivedata" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
 lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieCompose" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+richtext-commonmark = { module = "com.halilibo.compose-richtext:richtext-commonmark", version.ref = "richtextCommonmark" }
+richtext-ui = { module = "com.halilibo.compose-richtext:richtext-ui", version.ref = "richtextUiVersion" }
+richtext-ui-material3 = { module = "com.halilibo.compose-richtext:richtext-ui-material3", version.ref = "richtextUiMaterial3" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

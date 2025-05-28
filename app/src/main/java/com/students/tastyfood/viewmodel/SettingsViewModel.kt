@@ -10,6 +10,5 @@ class SettingsViewModel : ViewModel() {
     var isDarkTheme by mutableStateOf(false)
     var fontSize by mutableFloatStateOf(16f)
     var isEnglish by mutableStateOf(false)
-    // Можно добавить другие настройки
 }
 

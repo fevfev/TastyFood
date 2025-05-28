@@ -95,5 +95,29 @@
     <string name="My_recipes">My recipes</string>
     <string name="add_recipes">Add recipe</string>
     <string name="settingsm">Settings</string>
+    <string name="new_category">New Category</string>
+    <string name="category_saved">Category saved</string>
+    <string name="category_removed">Category removed</string>
+    <string name="category_not_saved">Category not saved</string>
+    <string name="no_saved_categories">No saved categories</string>
+    <string name="category_not_found">Category not found</string>
+    <string name="category_not_found_description">Try changing filters or add a new category</string>
+    <string name="description_media">Description of photo or video</string>
+<string name="add_media">Add media</string>
+    <string name="recipe_not_found_error">Recipe not found. Please try again.</string>
+    <string name="category_not_found_error">Category not found. Please try again.</string>
+    <string name="media_upload_success">Media uploaded successfully.</string>
+    <string name="media_upload_error">Error uploading media. Please try again.</string>
+    <string name="recipe_saved_success">Recipe saved successfully.</string>
+    <string name="recipe_save_error">Error saving recipe. Please try again.</string>
+    <string name="media_hint">Enter media description</string>
+    <string name="media_type">Media type</string>
+    <string name="image">Image</string>
+    <string name="video">Video</string>
+    <string name="media_added">Media added</string>
+    <string name="media_updated">Media updated</string>
+    <string name="media_deleted">Media deleted</string>
+    <string name="no_media_found">Media not found</string>
+    <string name="media_not_found_description">Try changing filters or add a new media</string>
 
 </resources>

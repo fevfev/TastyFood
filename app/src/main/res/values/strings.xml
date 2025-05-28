@@ -94,6 +94,30 @@
     <string name="My_recipes">Мои рецепты</string>
     <string name="add_recipes">Добавить рецепт</string>
     <string name="settingsm">Настройки</string>
+    <string name="new_category">Новая категория</string>
+    <string name="category_saved">Категория сохранена</string>
+    <string name="category_removed">Категория удалена</string>
+    <string name="category_not_saved">Категория не сохранена</string>
+    <string name="no_saved_categories">Нет сохранённых категорий</string>
+    <string name="category_not_found">Категория не найдена</string>
+    <string name="category_not_found_description">Попробуйте изменить фильтры или добавить новую категорию</string>
+    <string name="description_media">Описание фото или видео</string>
+<string name="add_media">Добавить медиа</string>
+    <string name="media_hint">Введите описание медиа</string>
+    <string name="media_type">Тип медиа</string>
+    <string name="image">Изображение</string>
+    <string name="video">Видео</string>
+    <string name="media_added">Медиа добавлено</string>
+    <string name="media_updated">Медиа обновлено</string>
+    <string name="media_deleted">Медиа удалено</string>
+    <string name="no_media_found">Медиа не найдено</string>
+    <string name="media_not_found_description">Попробуйте изменить фильтры или добавить новое медиа</string>
+    <string name="media_upload_success">Медиа успешно загружено.</string>
+    <string name="media_upload_error">Ошибка загрузки медиа. Попробуйте ещё раз.</string>
+    <string name="recipe_saved_success">Рецепт успешно сохранён.</string>
+    <string name="recipe_save_error">Ошибка сохранения рецепта. Попробуйте ещё раз.</string>
+    <string name="recipe_not_found_error">Рецепт не найден. Попробуйте ещё раз.</string>
+    <string name="category_not_found_error">Категория не найдена. Попробуйте ещё раз.</string>
 
 </resources>
 

@@ -1,7 +1,6 @@
 package com.students.tastyfood.data.local
 
 import android.content.Context
-import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -12,7 +11,7 @@ private val Context.dataStore by preferencesDataStore(name = "categories")
 
 object CategoriesDataStore {
     private val CATEGORIES_KEY = stringSetPreferencesKey("categories")
-    val defaultCategories = setOf("R.string.all_recipes", "R.string.breakfast", "R.string.asian", "R.string.lunch", "R.string.dinner", "R.string.salads", "R.string.soups", "R.string.desserts", "R.string.drinks")
+    val defaultCategories = setOf("Все", "Завтраки", "Азиатские", "Ланч", "Обед", "Ужин", "Салаты", "Десерты", "Напитки", "Закуски", "Постные", "Вегетарианские", "Веганские", "Без глютена", "Без молока")
 
     fun getCategories(context: Context): Flow<Set<String>> =
         context.dataStore.data.map { prefs ->

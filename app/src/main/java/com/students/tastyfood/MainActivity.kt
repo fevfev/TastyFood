@@ -7,10 +7,9 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.students.tastyfood.ui.theme.TastyFoodTheme
 import com.students.tastyfood.ui.navigation.NavGraph
+import com.students.tastyfood.ui.theme.TastyFoodTheme
 import com.students.tastyfood.viewmodel.SettingsViewModel
 
 class MainActivity : ComponentActivity() {

@@ -60,7 +60,6 @@ fun RecipeStepScreen(recipeId: Int, navController: NavController, viewModel: Rec
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            // Визуализация сложности
             LinearProgressIndicator(
                 progress = { it.difficulty / 5f },
                 modifier = Modifier
@@ -91,7 +90,6 @@ fun RecipeStepScreen(recipeId: Int, navController: NavController, viewModel: Rec
                 Markdown(it.description)
             }
             Spacer(modifier = Modifier.height(16.dp))
-            // Медиа из descriptionMedia
             if (it.descriptionMedia.isNotEmpty()) {
                 Text(text = "Медиа рецепта:", style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(8.dp))
@@ -124,7 +122,7 @@ fun RecipeStepScreen(recipeId: Int, navController: NavController, viewModel: Rec
                                 }
                             }
                             mediaUrl.endsWith(".mp4") -> {
-                                Text("Видео (mp4): $mediaUrl", color = MaterialTheme.colorScheme.primary)
+                                // Видео (mp4): просто показываем ссылку без текста
                             }
                             else -> {
                                 Image(

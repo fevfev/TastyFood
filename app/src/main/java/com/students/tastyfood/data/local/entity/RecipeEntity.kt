@@ -16,6 +16,7 @@ data class RecipeEntity(
     val isFavorite: Boolean = false,
     val ingredients: List<String> = emptyList(),
     val descriptionMedia: List<String> = emptyList(),
-    val category: String = "Все"
+    val category: String = "Все рецепты",
+    val steps: List<com.students.tastyfood.model.RecipeStep> = emptyList()
 )
 

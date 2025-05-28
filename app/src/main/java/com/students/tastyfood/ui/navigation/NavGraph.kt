@@ -27,6 +27,7 @@ sealed class Screen(val route: String) {
     object MyRecipes : Screen("myrecipes")
     object AddRecipe : Screen("addrecipe")
     object Settings : Screen("settings")
+    object RecipeSteps : Screen("recipeSteps/{recipeId}/{stepId}")
 }
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -70,7 +71,7 @@ fun NavGraph(navController: NavHostController = rememberNavController(), setting
                     slideInHorizontally { fullWidth -> fullWidth }.togetherWith(slideOutHorizontally { fullWidth -> -fullWidth })
                 }
             ) { _ ->
-                FavoritesScreen(navController, recipeViewModel)
+                FavoritesScreen(navController, recipeViewModel, onMenuClick = null)
             }
         }
         composable(Screen.MyRecipes.route) {
@@ -95,6 +96,11 @@ fun NavGraph(navController: NavHostController = rememberNavController(), setting
             AnimatedContent(targetState = navController.currentBackStackEntry?.destination?.route) { _ ->
                 SettingsScreen(navController, settingsViewModel = settingsViewModel)
             }
+        }
+        composable("recipeSteps/{recipeId}/{stepId}") { backStackEntry ->
+            val recipeId = backStackEntry.arguments?.getString("recipeId")?.toIntOrNull() ?: 0
+            val stepId = backStackEntry.arguments?.getString("stepId")?.toIntOrNull() ?: 0
+            RecipeStepsScreen(navController, recipeId = recipeId, stepId = stepId, viewModel = recipeViewModel)
         }
     }
 }
