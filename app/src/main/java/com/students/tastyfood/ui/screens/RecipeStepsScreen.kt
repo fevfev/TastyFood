@@ -45,6 +45,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -117,15 +118,15 @@ fun RecipeStepsScreen(navController: NavController, recipeId: Int, stepId: Int, 
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             LinearProgressIndicator(
-            progress = { (currentStep + 1) / totalSteps.toFloat() },
-            modifier = Modifier
-                                .fillMaxWidth(0.85f)
-                                .height(8.dp)
-                                .padding(top = 16.dp, bottom = 8.dp)
-                                .clip(RoundedCornerShape(8.dp)),
-            color = PastelPink,
-            trackColor = Color.LightGray,
-            strokeCap = StrokeCap.Round,
+                progress = (currentStep + 1) / totalSteps.toFloat(),
+                modifier = Modifier
+                    .fillMaxWidth(0.85f)
+                    .height(8.dp)
+                    .padding(top = 16.dp, bottom = 8.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+                color = PastelPink,
+                trackColor = Color.LightGray,
+                strokeCap = StrokeCap.Round,
             )
             Text(
                 text = "Осталось времени: $timeLeft мин.",
@@ -149,22 +150,62 @@ fun RecipeStepsScreen(navController: NavController, recipeId: Int, stepId: Int, 
                     },
                 contentAlignment = Alignment.Center
             ) {
-                if (!step.imageUrl.isNullOrBlank()) {
-                    Image(
-                        painter = rememberAsyncImagePainter(step.imageUrl),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .scale(imageScale)
-                            .offset { androidx.compose.ui.unit.IntOffset(imageOffsetX.toInt(), imageOffsetY.toInt()) },
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    Box(
-                        modifier = Modifier.fillMaxSize().background(PastelBg),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("Нет изображения", color = PastelPink)
+                val context = LocalContext.current
+                val imageUrl = step.imageUrl
+                when {
+                    imageUrl.isNullOrBlank() -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize().background(PastelBg),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("Нет изображения", color = PastelPink)
+                        }
+                    }
+                    imageUrl.contains("youtube.com") || imageUrl.contains("youtu.be") -> {
+                        val videoId = if (imageUrl.contains("v=")) imageUrl.substringAfter("v=").substringBefore("&") else imageUrl.substringAfterLast("/")
+                        val thumbnailUrl = "https://img.youtube.com/vi/$videoId/0.jpg"
+                        Image(
+                            painter = rememberAsyncImagePainter(thumbnailUrl),
+                            contentDescription = "YouTube превью",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .scale(imageScale)
+                                .offset { androidx.compose.ui.unit.IntOffset(imageOffsetX.toInt(), imageOffsetY.toInt()) }
+                        )
+                        Button(
+                            onClick = {
+                                val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(imageUrl))
+                                context.startActivity(intent)
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = PastelPink),
+                            modifier = Modifier.align(Alignment.BottomCenter).padding(8.dp)
+                        ) {
+                            Text("Смотреть на YouTube", color = Color.White)
+                        }
+                    }
+                    imageUrl.endsWith(".mp4") -> {
+                        Button(
+                            onClick = {
+                                val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(imageUrl))
+                                context.startActivity(intent)
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = PastelPink),
+                            modifier = Modifier.align(Alignment.Center)
+                        ) {
+                            Text("Смотреть видео", color = Color.White)
+                        }
+                    }
+                    else -> {
+                        Image(
+                            painter = rememberAsyncImagePainter(imageUrl),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .scale(imageScale)
+                                .offset { androidx.compose.ui.unit.IntOffset(imageOffsetX.toInt(), imageOffsetY.toInt()) }
+                        )
                     }
                 }
             }
