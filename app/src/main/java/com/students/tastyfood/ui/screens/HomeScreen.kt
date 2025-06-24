@@ -80,8 +80,10 @@ import com.students.tastyfood.R
 import com.students.tastyfood.data.local.CategoriesDataStore
 import com.students.tastyfood.data.local.entity.RecipeEntity
 import com.students.tastyfood.data.remote.MealDto
+import com.students.tastyfood.ui.theme.LightPink
 import com.students.tastyfood.ui.theme.PastelBg
 import com.students.tastyfood.ui.theme.PastelPink
+import com.students.tastyfood.ui.theme.SoftPink
 import com.students.tastyfood.ui.theme.TextColor
 import com.students.tastyfood.viewmodel.RecipeViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -114,7 +116,7 @@ fun HomeScreen(navController: NavController, viewModel: RecipeViewModel) {
         }
     }
     LaunchedEffect(key1 = true) {
-        viewModel.loadRandomMeals(2)
+        viewModel.loadRandomMeals(20)
     }
 
     val filteredRecipes = recipes
@@ -142,7 +144,7 @@ fun HomeScreen(navController: NavController, viewModel: RecipeViewModel) {
                                 if (isSelected)
                                     Modifier
                                         .shadow(8.dp, RoundedCornerShape(18.dp))
-                                        .background(Color(0xFFFDF6F9), RoundedCornerShape(18.dp))
+                                        .background(LightPink, RoundedCornerShape(18.dp))
                                 else Modifier
                             )
                     ) {
@@ -296,21 +298,6 @@ fun HomeScreen(navController: NavController, viewModel: RecipeViewModel) {
                                     Text("Загрузить сетевые рецепты")
                                 }
                             }
-                            Text(
-                                text = "Сетевых рецептов: ${randomMeals.size}",
-                                color = Color.Gray,
-                                fontSize = 12.sp,
-                                modifier = Modifier.padding(start = 20.dp, bottom = 4.dp)
-                            )
-                            if (randomMeals.isNotEmpty()) {
-                                Text(
-                                    text = "Первый сетевой рецепт: ${randomMeals.firstOrNull()?.strMeal ?: "-"}",
-                                    color = Color.Gray,
-                                    fontSize = 12.sp,
-                                    modifier = Modifier.padding(start = 20.dp, bottom = 4.dp)
-                                )
-                            }
-
                             if (combinedRecipes.isEmpty()) {
                                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -408,7 +395,7 @@ fun HomeScreen(navController: NavController, viewModel: RecipeViewModel) {
                                                                 .height(6.dp)
                                                                 .padding(top = 4.dp, bottom = 2.dp),
                                                             color = PastelPink,
-                                                            trackColor = Color(0xFFF8EAF3),
+                                                            trackColor = LightPink,
                                                             strokeCap = StrokeCap.Round,
                                                         )
                                                         Text("Сложность: ${localRecipe.difficulty}/5", fontSize = 11.sp, color = PastelPink)
@@ -443,10 +430,10 @@ fun HomeScreen(navController: NavController, viewModel: RecipeViewModel) {
                                                                         modifier = Modifier
                                                                             .height(120.dp)
                                                                             .fillMaxWidth()
-                                                                            .background(Color(0xFFF8EAF3)),
+                                                                            .background(LightPink),
                                                                         contentAlignment = Alignment.Center
                                                                     ) {
-                                                                        Text("Нет фото", color = Color(0xFFB39EB5))
+                                                                        Text("Нет фото", color = SoftPink)
                                                                     }
                                                                 }
                                                             } else {
@@ -454,10 +441,10 @@ fun HomeScreen(navController: NavController, viewModel: RecipeViewModel) {
                                                                     modifier = Modifier
                                                                         .height(120.dp)
                                                                         .fillMaxWidth()
-                                                                        .background(Color(0xFFF8EAF3)),
+                                                                        .background(LightPink),
                                                                     contentAlignment = Alignment.Center
                                                                 ) {
-                                                                    Text("Нет фото", color = Color(0xFFB39EB5))
+                                                                    Text("Нет фото", color = PastelBg)
                                                                 }
                                                             }
                                                             IconButton(
@@ -522,100 +509,17 @@ fun HomeScreen(navController: NavController, viewModel: RecipeViewModel) {
     }
 }
 
-@Composable
-fun RecipeCardGridItem(
-    recipe: RecipeEntity,
-    onClick: () -> Unit,
-    onFavoriteClick: () -> Unit,
-    pastelPink: Color,
-    textColor: Color
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(220.dp)
-            .clickable { onClick() },
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(6.dp),
-        colors = CardDefaults.cardColors(containerColor = PastelBg)
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Box(modifier = Modifier.fillMaxWidth()) {
-                val painter = rememberAsyncImagePainter(recipe.imageUrl)
-                if (!recipe.imageUrl.isNullOrBlank()) {
-                    Image(
-                        painter = painter,
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .height(120.dp)
-                            .fillMaxWidth()
-                    )
-                    if (painter.state is coil3.compose.AsyncImagePainter.State.Error) {
-                        Box(
-                            modifier = Modifier
-                                .height(120.dp)
-                                .fillMaxWidth()
-                                .background(Color.LightGray),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text("Нет фото", color = Color.DarkGray)
-                        }
-                    }
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .height(120.dp)
-                            .fillMaxWidth()
-                            .background(Color.LightGray),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("Нет фото", color = Color.DarkGray)
-                    }
-                }
-                IconButton(
-                    onClick = onFavoriteClick,
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(6.dp)
-                ) {
-                    Icon(
-                        imageVector = if (recipe.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                        contentDescription = null,
-                        tint = PastelPink
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(recipe.title, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = TextColor)
-            Text("${recipe.cookingTime} мин", fontSize = 12.sp, color = PastelPink)
-            Text("★ ${recipe.rating}", fontSize = 12.sp, color = PastelPink)
-            LinearProgressIndicator(
-                progress = { recipe.difficulty / 5f },
-                modifier = Modifier
-                    .fillMaxWidth(0.7f)
-                    .height(6.dp)
-                    .padding(top = 4.dp, bottom = 2.dp),
-                color = PastelPink,
-                trackColor = Color(0xFFF8EAF3),
-                strokeCap = StrokeCap.Round,
-            )
-            Text("Сложность: ${recipe.difficulty}/5", fontSize = 11.sp, color = PastelPink)
-        }
-    }
-}
-
 fun mealDtoToRecipeEntity(meal: MealDto): RecipeEntity {
     return RecipeEntity(
-        id = 0, // автоинкремент
+        id = 0,
         title = meal.strMeal ?: "Без названия",
         imageUrl = meal.strMealThumb,
-        cookingTime = "?", // TheMealDB не содержит времени готовки
-        difficulty = 1, // Можно добавить рандом или фиксированное значение
+        cookingTime = "?",
+        difficulty = 1,
         description = meal.strInstructions ?: "",
         rating = 0f,
         isFavorite = true,
-        ingredients = emptyList(), // Можно доработать парсинг ингредиентов
+        ingredients = emptyList(),
         descriptionMedia = emptyList(),
         category = meal.strCategory ?: "Сеть"
     )

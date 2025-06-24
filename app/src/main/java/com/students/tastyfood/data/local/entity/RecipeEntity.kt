@@ -10,7 +10,7 @@ data class RecipeEntity(
     val title: String,
     val imageUrl: String?,
     val cookingTime: String,
-    val difficulty: Int, // 1..5
+    val difficulty: Int,
     val description: String,
     val rating: Float,
     val isFavorite: Boolean = false,

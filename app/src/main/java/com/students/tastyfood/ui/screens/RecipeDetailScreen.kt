@@ -47,6 +47,9 @@ import com.students.tastyfood.viewmodel.RecipeViewModel
 import kotlinx.coroutines.flow.collectLatest
 import com.halilibo.richtext.commonmark.Markdown
 import com.halilibo.richtext.ui.material3.RichText
+import com.students.tastyfood.ui.theme.PastelPink
+import com.students.tastyfood.ui.theme.Pink80
+import com.students.tastyfood.ui.theme.SoftPink
 
 
 @Composable
@@ -65,10 +68,9 @@ fun RecipeDetailScreen(navController: NavController, recipeId: Int, viewModel: R
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFFFF6FA)) // светлый бело-розовый фон
+                .background(Color(0xFFFFF6FA))
         ) {
             item {
-                // Кнопка "Назад" без белого фона и тени
                 IconButton(
                     onClick = { navController.popBackStack() },
                     modifier = Modifier.padding(12.dp)
@@ -112,7 +114,7 @@ fun RecipeDetailScreen(navController: NavController, recipeId: Int, viewModel: R
                         text = it.title,
                         fontWeight = FontWeight.Bold,
                         fontSize = 24.sp,
-                        color = Color(0xFFF96163),
+                        color = PastelPink,
                         modifier = Modifier.padding(16.dp)
                     )
                 }
@@ -123,7 +125,7 @@ fun RecipeDetailScreen(navController: NavController, recipeId: Int, viewModel: R
                 )
                 val recipeIngredients = allIngredients.filter { it.name in recipe.ingredients }
                 if (recipeIngredients.isNotEmpty()) {
-                    Text("Ингредиенты:", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = Color(0xFFF96163), modifier = Modifier.padding(start = 16.dp, top = 8.dp))
+                    Text("Ингредиенты:", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = SoftPink, modifier = Modifier.padding(start = 16.dp, top = 8.dp))
                     LazyRow(modifier = Modifier.padding(start = 16.dp, top = 4.dp, bottom = 8.dp)) {
                         items(recipeIngredients) { ingredient ->
                             Box(
@@ -152,37 +154,37 @@ fun RecipeDetailScreen(navController: NavController, recipeId: Int, viewModel: R
                         .height(8.dp)
                         .padding(start = 16.dp, top = 4.dp, bottom = 2.dp)
                         .shadow(2.dp, RoundedCornerShape(8.dp)),
-                    color = Color(0xFFF96163),
-                    trackColor = Color(0xFFFFE0EC),
+                    color = PastelPink,
+                    trackColor = Pink80,
                     strokeCap = StrokeCap.Round,
                 )
-                Text("Сложность: ${it.difficulty}/5", fontSize = 13.sp, color = Color(0xFFF96163), modifier = Modifier.padding(start = 16.dp, bottom = 8.dp))
+                Text("Сложность: ${it.difficulty}/5", fontSize = 13.sp, color = PastelPink, modifier = Modifier.padding(start = 16.dp, bottom = 8.dp))
 
                 Text(
                     text = "Время готовки: ${recipe.cookingTime} мин",
                     fontSize = 16.sp,
-                    color = Color(0xFFB23A48),
+                    color = SoftPink,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
 
                 Text(
                     text = "Оценка: ${it.rating} ⭐",
                     fontSize = 16.sp,
-                    color = Color(0xFFB23A48),
+                    color = SoftPink,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                 )
 
                 val stepsList = it.steps
                 Text(
                     text = "Шагов: ${stepsList.size}",
-                    color = Color(0xFFB23A48),
+                    color = SoftPink,
                     fontSize = 14.sp,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                 )
                 val hasSteps = stepsList.isNotEmpty()
                 val stepId = if (hasSteps) 0 else 0
 
-                Text(text = "Описание:", color = Color(0xFFF96163), fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(start = 16.dp, top = 8.dp))
+                Text(text = "Описание:", color = PastelPink, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(start = 16.dp, top = 8.dp))
                 RichText(
                     modifier = Modifier.padding(16.dp)
                 ) {
@@ -202,7 +204,7 @@ fun RecipeDetailScreen(navController: NavController, recipeId: Int, viewModel: R
                         .shadow(8.dp, RoundedCornerShape(24.dp)),
                     shape = RoundedCornerShape(24.dp),
                     colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFF96163),
+                        containerColor = SoftPink,
                         contentColor = Color.White
                     )
                 ) {
